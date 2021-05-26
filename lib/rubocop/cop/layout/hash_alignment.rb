@@ -11,15 +11,10 @@ module RuboCop
       # * separator (align hash rockets and colons, right align keys)
       # * table (left align keys, hash rockets, and values)
       #
-      # The treatment of hashes passed as the last argument to a method call
-      # can also be configured. The options are:
-      #
-      # * always_inspect
-      # * always_ignore
-      # * ignore_implicit (without curly braces)
-      #
       # Alternatively you can specify multiple allowed styles. That's done by
       # passing a list of styles to EnforcedStyles.
+      #
+      # To affect the treatment of hashes that are keyword arguments use AlignArguments
       #
       # @example EnforcedHashRocketStyle: key (default)
       #   # bad
@@ -85,6 +80,20 @@ module RuboCop
       #     ba: baz
       #   }
       #
+      #   # bad
+      #   do_something({foo: 1,
+      #     bar: 2})
+      #
+      #   # good
+      #   do_something({foo: 1,
+      #                 bar: 2})
+      #
+      #   # good
+      #   do_something({
+      #     foo: 1,
+      #     bar: 2
+      #   })
+      #
       # @example EnforcedColonStyle: separator
       #   # bad
       #   {
@@ -111,73 +120,12 @@ module RuboCop
       #     ba:  baz
       #   }
       #
-      # @example EnforcedLastArgumentHashStyle: always_inspect (default)
-      #   # Inspect both implicit and explicit hashes.
       #
-      #   # bad
-      #   do_something(foo: 1,
-      #     bar: 2)
-      #
-      #   # bad
-      #   do_something({foo: 1,
-      #     bar: 2})
-      #
-      #   # good
-      #   do_something(foo: 1,
-      #                bar: 2)
-      #
-      #   # good
-      #   do_something(
-      #     foo: 1,
-      #     bar: 2
-      #   )
-      #
-      #   # good
-      #   do_something({foo: 1,
-      #                 bar: 2})
-      #
-      #   # good
-      #   do_something({
-      #     foo: 1,
-      #     bar: 2
-      #   })
-      #
-      # @example EnforcedLastArgumentHashStyle: always_ignore
-      #   # Ignore both implicit and explicit hashes.
-      #
-      #   # good
-      #   do_something(foo: 1,
-      #     bar: 2)
-      #
-      #   # good
-      #   do_something({foo: 1,
-      #     bar: 2})
-      #
-      # @example EnforcedLastArgumentHashStyle: ignore_implicit
-      #   # Ignore only implicit hashes.
-      #
-      #   # bad
-      #   do_something({foo: 1,
-      #     bar: 2})
-      #
-      #   # good
-      #   do_something(foo: 1,
-      #     bar: 2)
-      #
-      # @example EnforcedLastArgumentHashStyle: ignore_explicit
-      #   # Ignore only explicit hashes.
-      #
-      #   # bad
-      #   do_something(foo: 1,
-      #     bar: 2)
-      #
-      #   # good
-      #   do_something({foo: 1,
-      #     bar: 2})
       #
       class HashAlignment < Base
         include HashAlignmentStyles
         include RangeHelp
+        include Alignment
         extend AutoCorrector
 
         MESSAGES = { KeyAlignment => 'Align the keys of a hash literal if ' \
@@ -193,7 +141,7 @@ module RuboCop
 
           last_argument = node.last_argument
 
-          return unless last_argument.hash_type? && ignore_hash_argument?(last_argument)
+          return unless last_argument.hash_type? && !last_argument.braces?
 
           ignore_node(last_argument)
         end
@@ -261,15 +209,6 @@ module RuboCop
 
           column_deltas[alignment.class][node] = delta
           offences_by[alignment.class].push(node)
-        end
-
-        def ignore_hash_argument?(node)
-          case cop_config['EnforcedLastArgumentHashStyle']
-          when 'always_inspect'  then false
-          when 'always_ignore'   then true
-          when 'ignore_explicit' then node.braces?
-          when 'ignore_implicit' then !node.braces?
-          end
         end
 
         def alignment_for(pair)

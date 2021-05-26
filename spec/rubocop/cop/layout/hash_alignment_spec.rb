@@ -30,22 +30,6 @@ RSpec.describe RuboCop::Cop::Layout::HashAlignment, :config do
     end
   end
 
-  context 'always inspect last argument hash' do
-    let(:cop_config) { { 'EnforcedLastArgumentHashStyle' => 'always_inspect' } }
-
-    it 'registers offense and corrects misaligned keys in implicit hash' do
-      expect_offense(<<~RUBY)
-        func(a: 0,
-          b: 1)
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        func(a: 0,
-             b: 1)
-      RUBY
-    end
-
     it 'registers offense and corrects misaligned keys in explicit hash' do
       expect_offense(<<~RUBY)
         func({a: 0,
@@ -59,19 +43,6 @@ RSpec.describe RuboCop::Cop::Layout::HashAlignment, :config do
       RUBY
     end
 
-    it 'registers an offense and corrects misaligned keys in implicit hash for super' do
-      expect_offense(<<~RUBY)
-        super(a: 0,
-          b: 1)
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        super(a: 0,
-              b: 1)
-      RUBY
-    end
-
     it 'registers an offense and corrects misaligned keys in explicit hash for super' do
       expect_offense(<<~RUBY)
         super({a: 0,
@@ -82,19 +53,6 @@ RSpec.describe RuboCop::Cop::Layout::HashAlignment, :config do
       expect_correction(<<~RUBY)
         super({a: 0,
                b: 1})
-      RUBY
-    end
-
-    it 'registers an offense and corrects misaligned keys in implicit hash for yield' do
-      expect_offense(<<~RUBY)
-        yield(a: 0,
-          b: 1)
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        yield(a: 0,
-              b: 1)
       RUBY
     end
 
@@ -110,22 +68,11 @@ RSpec.describe RuboCop::Cop::Layout::HashAlignment, :config do
                b: 1})
       RUBY
     end
-  end
-
-  context 'always ignore last argument hash' do
-    let(:cop_config) { { 'EnforcedLastArgumentHashStyle' => 'always_ignore' } }
 
     it 'accepts misaligned keys in implicit hash' do
       expect_no_offenses(<<~RUBY)
         func(a: 0,
           b: 1)
-      RUBY
-    end
-
-    it 'accepts misaligned keys in explicit hash' do
-      expect_no_offenses(<<~RUBY)
-        func({a: 0,
-          b: 1})
       RUBY
     end
 
@@ -136,155 +83,12 @@ RSpec.describe RuboCop::Cop::Layout::HashAlignment, :config do
       RUBY
     end
 
-    it 'accepts misaligned keys in explicit hash for super' do
-      expect_no_offenses(<<~RUBY)
-        super({a: 0,
-          b: 1})
-      RUBY
-    end
-
     it 'accepts misaligned keys in implicit hash for yield' do
       expect_no_offenses(<<~RUBY)
         yield(a: 0,
           b: 1)
       RUBY
     end
-
-    it 'accepts misaligned keys in explicit hash for yield' do
-      expect_no_offenses(<<~RUBY)
-        yield({a: 0,
-          b: 1})
-      RUBY
-    end
-  end
-
-  context 'ignore implicit last argument hash' do
-    let(:cop_config) { { 'EnforcedLastArgumentHashStyle' => 'ignore_implicit' } }
-
-    it 'accepts misaligned keys in implicit hash' do
-      expect_no_offenses(<<~RUBY)
-        func(a: 0,
-          b: 1)
-      RUBY
-    end
-
-    it 'registers an offense and corrects misaligned keys in explicit hash' do
-      expect_offense(<<~RUBY)
-        func({a: 0,
-          b: 1})
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        func({a: 0,
-              b: 1})
-      RUBY
-    end
-
-    it 'accepts misaligned keys in implicit hash for super' do
-      expect_no_offenses(<<~RUBY)
-        super(a: 0,
-          b: 1)
-      RUBY
-    end
-
-    it 'registers an offense and corrects misaligned keys in explicit hash for super' do
-      expect_offense(<<~RUBY)
-        super({a: 0,
-          b: 1})
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        super({a: 0,
-               b: 1})
-      RUBY
-    end
-
-    it 'accepts misaligned keys in implicit hash for yield' do
-      expect_no_offenses(<<~RUBY)
-        yield(a: 0,
-          b: 1)
-      RUBY
-    end
-
-    it 'registers an offense and corrects misaligned keys in explicit hash for yield' do
-      expect_offense(<<~RUBY)
-        yield({a: 0,
-          b: 1})
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        yield({a: 0,
-               b: 1})
-      RUBY
-    end
-  end
-
-  context 'ignore explicit last argument hash' do
-    let(:cop_config) { { 'EnforcedLastArgumentHashStyle' => 'ignore_explicit' } }
-
-    it 'registers an offense and corrects misaligned keys in implicit hash' do
-      expect_offense(<<~RUBY)
-        func(a: 0,
-          b: 1)
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        func(a: 0,
-             b: 1)
-      RUBY
-    end
-
-    it 'accepts misaligned keys in explicit hash' do
-      expect_no_offenses(<<~RUBY)
-        func({a: 0,
-          b: 1})
-      RUBY
-    end
-
-    it 'registers an offense and corrects misaligned keys in implicit hash for super' do
-      expect_offense(<<~RUBY)
-        super(a: 0,
-          b: 1)
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        super(a: 0,
-              b: 1)
-      RUBY
-    end
-
-    it 'accepts misaligned keys in explicit hash for super' do
-      expect_no_offenses(<<~RUBY)
-        super({a: 0,
-          b: 1})
-      RUBY
-    end
-
-    it 'registers an offense and corrects misaligned keys in implicit hash for yield' do
-      expect_offense(<<~RUBY)
-        yield(a: 0,
-          b: 1)
-          ^^^^ Align the keys of a hash literal if they span more than one line.
-      RUBY
-
-      expect_correction(<<~RUBY)
-        yield(a: 0,
-              b: 1)
-      RUBY
-    end
-
-    it 'accepts misaligned keys in explicit hash for yield' do
-      expect_no_offenses(<<~RUBY)
-        yield({a: 0,
-          b: 1})
-      RUBY
-    end
-  end
 
   context 'with default configuration' do
     it 'registers an offense and corrects misaligned hash keys' do
@@ -434,44 +238,32 @@ RSpec.describe RuboCop::Cop::Layout::HashAlignment, :config do
       RUBY
     end
 
-    context 'with implicit hash as last argument' do
-      it 'registers an offense and corrects misaligned hash keys' do
-        expect_offense(<<~RUBY)
-          func(a: 0,
-            b: 1)
-            ^^^^ Align the keys of a hash literal if they span more than one line.
-        RUBY
 
-        expect_correction(<<~RUBY)
-          func(a: 0,
-               b: 1)
-        RUBY
-      end
-
-      it 'registers an offense and corrects right alignment of keys' do
-        expect_offense(<<~RUBY)
-          func(a: 0,
-             bbb: 1)
-             ^^^^^^ Align the keys of a hash literal if they span more than one line.
-        RUBY
-
-        expect_correction(<<~RUBY)
-          func(a: 0,
-               bbb: 1)
-        RUBY
-      end
-
-      it 'accepts aligned hash keys' do
+      it 'accepts any alignment of implicit keys' do
         expect_no_offenses(<<~RUBY)
           func(a: 0,
+            b: 1)
+
+          func(a: 0,
                b: 1)
+
+          func(a: 0,
+                 b: 1)
+
+          func(a: 0,
+             bbb: 1)
+
+          func(a: 0,
+            bbb: 1)
+
+          func(a: 0,
+          b: 1)
         RUBY
       end
 
       it 'accepts an empty hash' do
         expect_no_offenses('h = {}')
       end
-    end
 
     it 'registers an offense and corrects mixed hash styles' do
       expect_offense(<<~RUBY)
@@ -507,17 +299,10 @@ RSpec.describe RuboCop::Cop::Layout::HashAlignment, :config do
       RUBY
     end
 
-    it 'registers an offense and corrects alignment when using double splat in an explicit hash' do
-      expect_offense(<<~RUBY)
+    it "accepts whatever alignment of Hash() because it's not a literal hash" do
+      expect_no_offenses(<<~RUBY)
         Hash(foo: 'bar',
                **extra_params
-               ^^^^^^^^^^^^^^ Align the keys of a hash literal if they span more than one line.
-        )
-      RUBY
-
-      expect_correction(<<~RUBY)
-        Hash(foo: 'bar',
-             **extra_params
         )
       RUBY
     end
